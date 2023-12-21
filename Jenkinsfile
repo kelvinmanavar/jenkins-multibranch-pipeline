@@ -1,16 +1,12 @@
 pipeline {
-
     agent any
-
     options {
         buildDiscarder logRotator( 
                     daysToKeepStr: '16', 
                     numToKeepStr: '10'
             )
     }
-
-    stages {
-        
+    stages {        
         stage('Cleanup Workspace') {
             steps {
                 cleanWs()
@@ -19,7 +15,6 @@ pipeline {
                 """
             }
         }
-
         stage('Code Checkout') {
             steps {
                 checkout([
@@ -29,7 +24,6 @@ pipeline {
                 ])
             }
         }
-
         stage(' Unit Testing') {
             steps {
                 sh """
@@ -37,7 +31,6 @@ pipeline {
                 """
             }
         }
-
         stage('Code Analysis') {
             steps {
                 sh """
@@ -45,8 +38,7 @@ pipeline {
                 """
             }
         }
-
-        stage('Build Deploy Code') {
+        stage('Build Code') {
             when {
                 branch 'develop'
             }
@@ -54,12 +46,17 @@ pipeline {
                 sh """
                 echo "Building Artifact"
                 """
-
+            }
+        }
+        stage('Deploy Code') {
+            when {
+                branch 'master'
+            }
+            steps {
                 sh """
-                echo "Deploying Code"
+                echo "deploying Artifact"
                 """
             }
         }
-
     }   
 }
